@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -162,12 +163,60 @@ public class MemberController {
 		return authCode;
 	}
 
-	// 회원수정 폼
+	// 회원수정 폼 : 로그인한 사용자의 정보를 폼에 표시
 	@GetMapping("/modify")
-	public void modify() {
+	public void modify(HttpSession session, Model model) {
+		
+		MemberVO vo = (MemberVO) session.getAttribute("loginStatus");
+		
+		String mbsp_id = vo.getMbsp_id();
+		
+		// 로그인, 회원수정 동일하게 사용
+		/*
+		MemberVO db_vo = service.login(mbsp_id);
+		model.addAttribute("memberVO", db_vo);
+		*/
+		
+		model.addAttribute(service.login(mbsp_id));
 		
 	}
 	
+	// 회원수정저장
+	@PostMapping("/modify")
+	public String modify(MemberVO vo, HttpSession session, RedirectAttributes rttr) {
+		
+		/*
+			StringUtils.isEmpty(vo.getMbsp_receive())
+			
+			체크를 하면 널이 아닌상태
+			체크를 안하면 널인 상태
+			
+		 */
+		
+		String redirectURL = "";
+		
+		vo.setMbsp_receive(!StringUtils.isEmpty(vo.getMbsp_receive()) ? "Y" : "N");
+		
+		log.info("회원수정정보: " + vo);
+		
+		MemberVO session_vo = (MemberVO) session.getAttribute("loginStatus");
+		
+		if(cryptPassEnc.matches(vo.getMbsp_password(), session_vo.getMbsp_password())) {
+			
+			service.modify(vo);				
+			
+			redirectURL = "/";
+			rttr.addFlashAttribute("msg", "modifyOk"); // "/" 주의 index.jsp에서 msg를 참조해서 사용
+			
+			
+		}else {
+			redirectURL = "/member/modify";
+			rttr.addFlashAttribute("msg", "modifyFail");// modify.jsp에서 msg를 참조해서 사용
+		}
+		
+		return "redirect:" + redirectURL;
+		
+	}
 	
 	
 	// 회원삭제
@@ -175,7 +224,7 @@ public class MemberController {
 	
 	
 	
-	// 로그인 /member/login
+	// 로그인폼 /member/login
 	@GetMapping("/login")
 	public void login() {
 		
@@ -183,8 +232,49 @@ public class MemberController {
 	
 	
 	
-	// 로그아웃
+	// 로그인
+	@ResponseBody
+	@PostMapping("/login")
+	public ResponseEntity<String> login(@RequestParam("mbsp_id") String mbsp_id, @RequestParam("mbsp_password") String mbsp_password, HttpSession session) throws Exception{
+		
+		String result = "";
+		ResponseEntity<String> entity = null;
+		
+		MemberVO vo = service.login(mbsp_id);
+		
+		if(vo == null) { // id가 존재안하는 의미
+			result = "idFail";
+		}else { // id가 존재하는 의미.
+			
+			if(cryptPassEnc.matches(mbsp_password, vo.getMbsp_password())) {
+				result = "success";
+				
+				session.setAttribute("loginStatus", vo); // 로그인 성공 상태정보를 세션으로 저장
+				
+			}else {
+				result = "pwFail";
+			}
+		}
+		
+		
+		
+		entity = new ResponseEntity<String>(result, HttpStatus.OK);
+		
+		return entity;
+		
+	}
 	
+	
+	
+	// 로그아웃
+	@GetMapping("/logout")
+	public String logout(HttpSession session, RedirectAttributes rttr) {
+		
+		session.invalidate();
+		
+		return "redirect:/";
+		
+	}
 	
 	
 	

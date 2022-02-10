@@ -42,6 +42,15 @@
     <!-- Custom styles for this template -->
     <link href="pricing.css" rel="stylesheet">
   </head>
+  <script>
+
+  	let msg = '${msg}'; // EL구문 'modifyOk'
+  	if(msg == 'modifyOk'){
+  		alert("회원정보가 수정됨");
+  	}
+  
+  
+  </script>
   <body>
     
 <%@include file="/WEB-INF/views/include/header.jsp" %>

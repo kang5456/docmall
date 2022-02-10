@@ -8,4 +8,8 @@ public interface MemberMapper {
 	
 	public String checkID(String mbsp_id);
 	
+	public MemberVO login(String mbsp_id);
+	
+	public int modify(MemberVO vo);
+	
 }

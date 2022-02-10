@@ -234,7 +234,7 @@
 
 
 
-				// 메일 인증 확인
+		// 메일 인증 확인
 		$("#btnMailAuthConfirm").on("click", function(){
 
 

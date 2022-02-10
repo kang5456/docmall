@@ -6,7 +6,7 @@
 
 	<insert id="join" parameterType="com.docmall.domain.MemberVO">
 	
-		insert into mbsp_tbl(
+		INSERT INTO mbsp_tbl(
 			mbsp_id, 
 			mbsp_password, 
 			mbsp_name, 
@@ -17,7 +17,7 @@
 			mbsp_phone, 
 			mbsp_receive
 			)
-		values(
+		VALUES(
 			#{mbsp_id},
 			#{mbsp_password},
 			#{mbsp_name},
@@ -33,12 +33,42 @@
 
 	<select id="checkID" resultType="string">
 	
-		select 
+		SELECT 
 			mbsp_id 
-		from 
+		FROM 
 			mbsp_tbl
-		where 
+		WHERE 
 			mbsp_id = #{mbsp_id}
 	
 	</select>
+	
+	<select id="login" resultType="com.docmall.domain.MemberVO">
+	
+		SELECT
+			mbsp_id, mbsp_password, mbsp_name, mbsp_email, mbsp_zipcode, mbsp_addr, mbsp_deaddr, mbsp_phone, mbsp_receive, mbsp_point, mbsp_datesub, mbsp_updatedate, mbsp_lastlogin
+		FROM 
+			mbsp_tbl
+		WHERE 
+			mbsp_id = #{mbsp_id}
+		
+	
+	</select>
+	
+	<update id="modify">
+	
+		UPDATE
+			mbsp_tbl
+		SET
+			mbsp_email = #{mbsp_email}, 
+			mbsp_zipcode = #{mbsp_zipcode}, 
+			mbsp_addr = #{mbsp_addr}, 
+			mbsp_deaddr = #{mbsp_deaddr}, 
+			mbsp_phone = #{mbsp_phone}, 
+			mbsp_receive = #{mbsp_receive},
+			mbsp_updatedate = sysdate
+		WHERE
+			mbsp_id = #{mbsp_id}
+			
+	</update>
+	
 </mapper>

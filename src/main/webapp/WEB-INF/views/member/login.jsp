@@ -78,7 +78,7 @@
 					
 					<div class="form-group row">
 						<div class="offset-sm-2 col-sm-10">
-							<button type="submit" class="btn btn-primary">Sign in</button>
+							<button type="button" id="btnLogin" class="btn btn-primary">Sign in</button>
 						</div>
 					</div>
 				</form>
@@ -88,7 +88,53 @@
 		<%@include file="/WEB-INF/views/include/footer.jsp"%>
 	</div>
 
+<script>
 
+	$(document).ready(function(){
+
+		 //로그인
+		$("#btnLogin").on("click", function(){
+
+		let mbsp_id = $("#mbsp_id");
+		let mbsp_password = $("#mbsp_password");
+
+		if(mbsp_id.val() == "" || mbsp_id.val() == null){
+			alert("아이디를 입력하세요");
+			mbsp_id.focus();
+			return;
+		}
+
+		if(mbsp_password.val() == "" || mbsp_password.val() == null){
+			alert("비밀번호를 입력하세요");
+			mbsp_password.focus();
+			return;
+		}
+
+		$.ajax({
+			url: '/member/login',
+			type: 'post',
+			dataType: 'text',
+			data: { mbsp_id : mbsp_id.val(), mbsp_password: mbsp_password.val() },
+			success: function(data){
+				
+				if(data == "success"){
+					alert("로그인 성공.");
+					location.href = "/";
+				}else if(data == "idFail"){
+					alert("아이디를 확인해주세요.")
+					mbsp_id.focus();
+
+				}else if(data == "pWFail"){
+					alert("비밀번호를를 확인해주세요.")
+					mbsp_password.focus();
+				}
+			}
+		});
+	});
+
+});
+
+</script>
 
 </body>
 </html>

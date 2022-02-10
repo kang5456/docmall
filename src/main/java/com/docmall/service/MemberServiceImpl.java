@@ -31,4 +31,16 @@ public class MemberServiceImpl implements MemberService {
 		return mapper.checkID(mbsp_id);
 	}
 
+	@Override
+	public MemberVO login(String mbsp_id) {
+		
+		return mapper.login(mbsp_id);
+	}
+
+	@Override
+	public int modify(MemberVO vo) {
+		
+		return mapper.modify(vo);
+	}
+
 }
